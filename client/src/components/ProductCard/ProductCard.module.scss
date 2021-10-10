@@ -1,0 +1,39 @@
+.container {
+   background-color: #fff;
+   border-radius: 24px;
+   display: flex;
+   flex-direction: column;
+   padding: 2em;
+   width: calc(100vw/4);
+   margin: 1.5em;
+}
+
+.category {
+   opacity: 0.5;
+   font-size: 16px;
+}
+.name {
+   font-size: 40px;
+   margin-top: .3em;
+}
+.priceAndButton {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-top: 2em;
+}
+.priceWrapper {
+   display: flex;
+}
+.currency {
+   font-size: 30px;
+   margin-top: .2em;
+   margin-right: .2em;
+}
+.priceValue {
+   font-size: 60px;
+   text-align: start;
+   line-height: 1em;
+}
+.button {
+}

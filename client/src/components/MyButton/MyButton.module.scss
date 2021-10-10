@@ -1,0 +1,25 @@
+.container {
+   background-color: #fff;
+   border-radius: 16px;
+   border: 1px solid rgba(0, 0, 0, 0.1);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   padding: 1em;
+}
+
+.container:hover {
+   background-color: #4bcfa0;
+   border: 1px solid #4bcfa0;
+  
+   .text {
+      color: #fff;
+   }
+}
+
+.text {
+   color: #4bcfa0;
+   cursor: default;
+   font-weight: 500;
+}
+
