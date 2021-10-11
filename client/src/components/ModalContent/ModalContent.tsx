@@ -5,47 +5,58 @@ import { Form } from '../Form/Form'
 import MyButton from '../MyButton/MyButton'
 import MyInput from '../MyInput/MyInput'
 import CrossIcon from './assets/CrossIcon'
-import styles from './ModalContent.module.scss'
+import {
+   CategoryStyle, CloseWrapper, ContentStyle, CurrencyStyle, FormStyle,
+   ModalContentContainer, NameStyle, PriceValueStyle, PriceWrapper, ProductDataWrapper
+} from './ModalContentStyles'
 
+// Функция вынесена вне компоненты, чтоб не создавалась постоянно при изменении стейта
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => e.stopPropagation()
 
 
 export type SubmitData = {
    name: string
-   number: number | null
+   number: number | number | null
 }
 
 type ModalContentP = {
    handleSubmit: (values: SubmitData) => void
    currentProduct: ProductDataT
    onCancelClick: () => void
+   isLoading: boolean
 }
 
+// Начальное состояние значений инпута
 const initFormData: SubmitData = {
    name: ``,
    number: null
 }
 
-const ModalContent: FC<ModalContentP> = ({ handleSubmit, currentProduct, onCancelClick, }) => {
+const ModalContent: FC<ModalContentP> = ({ handleSubmit, currentProduct, onCancelClick, isLoading }) => {
 
    return (
-      <div className={styles.container} onClick={stopPropagation}>
-         <div onClick={onCancelClick} className={styles.closeWrapper}>
+      <ModalContentContainer onClick={stopPropagation}>
+         <CloseWrapper onClick={onCancelClick}>
             <CrossIcon />
-         </div>
-         <div className={styles.content}>
-            <div className={styles.productData}>
-               <div className={styles.category}>{currentProduct.category}</div>
-               <div className={styles.name}>{currentProduct.name}</div>
-               <div className={styles.priceWrapper}>
-                  <div className={styles.currency}>$</div>
-                  <div className={styles.priceValue}>{currentProduct.price}</div>
-               </div>
-            </div>
+         </CloseWrapper>
+         <ContentStyle>
+            <ProductDataWrapper >
+               <CategoryStyle>{currentProduct.category}</CategoryStyle>
+               <NameStyle>{currentProduct.name}</NameStyle>
+               <PriceWrapper>
+                  <CurrencyStyle>$</CurrencyStyle>
+                  <PriceValueStyle>{currentProduct.price}</PriceValueStyle>
+               </PriceWrapper>
+            </ProductDataWrapper>
             <Form<SubmitData>
                onSubmit={handleSubmit}
                initialValues={initFormData}
+               required={[`name`, `number`]}
                validate={(values) => {
+                  // Для валидации, передаем функцию которая принимает в себя текущее значения инпута
+                  // и проверяем их. Если условие не выполняется, то в объект добавляется ошибка которая привязана
+                  // к инпута по названию свойства
+                  // Это значние потом можно получить в Field и вывести юзеру
                   const errors: { [key in keyof SubmitData]?: string } = {}
 
                   if (!values.name) {
@@ -65,16 +76,16 @@ const ModalContent: FC<ModalContentP> = ({ handleSubmit, currentProduct, onCance
                   }
                   return errors
                }}
-               render={({ handleSubmit }) => (
-                  <form onSubmitCapture={handleSubmit}>
-                     <MyInput containerClassname={styles.inputWrapper} name={`name`} placeholder={`Name`} />
-                     <MyInput containerClassname={styles.inputWrapper} name={`number`} placeholder={`Number`} />
-                     <MyButton buttonClassname={styles.button} text={`ORDER`} />
-                  </form>
+               render={({ handleSubmit, isError }) => (
+                  <FormStyle onSubmitCapture={handleSubmit}>
+                     <MyInput name={`name`} placeholder={`Name`} />
+                     <MyInput name={`number`} placeholder={`Number`} />
+                     <MyButton buttonStyle={{ margin: `1em 0 0 0` }} disabled={isError || isLoading} type={`submit`} text={`ORDER`} />
+                  </FormStyle>
                )}
             />
-         </div>
-      </div>
+         </ContentStyle>
+      </ModalContentContainer>
    )
 }
 

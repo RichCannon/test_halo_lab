@@ -17,7 +17,8 @@ const initialState = {
 }
 
 
-
+// Логика как в orderReducer, но есть ещё cheapestProduct.
+// Это самый дешёвые продукт которые определяется при успешном запросе прям в саге
 const productsReducer = createSlice({
    name: "products",
    initialState,

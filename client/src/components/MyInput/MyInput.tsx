@@ -1,8 +1,8 @@
 import { FC, InputHTMLAttributes } from 'react'
-import { Field } from '../Field/Field'
 
+import { Field } from '../Field/Field'
 import CrossIcon from '../ModalContent/assets/CrossIcon'
-import styles from './MyInput.module.scss'
+import { CrossContainer, ErrorTextStyle, FieldContainer, InputContainer, InputStyle } from './MyInputStyles'
 
 type MyInputP = {
    name: string
@@ -10,29 +10,29 @@ type MyInputP = {
 } & InputHTMLAttributes<HTMLInputElement>
 
 const MyInput: FC<MyInputP> = ({ name, containerClassname = ``, ...inputProps }) => {
-
+ // Создаём общий инпут в котором используем Field
+ // Field получает данные из Form которые используются для обработки форм 
    return (
       <Field name={name}>
          {({ input, meta }) =>
-            <div className={`${styles.container} ${containerClassname}`}>
-               <div className={`${styles.inputContainer} ${meta.touched && (meta.error ? styles.inputContainerError : styles.inputContainerOk)}`}>
-                  <input
-                     className={styles.input}
+            <FieldContainer >
+               <InputContainer touched={meta.touched} error={meta.error}>
+                  <InputStyle 
                      {...inputProps}
                      {...input}
                   />
-                  <div className={styles.crossContainer}>
+                  <CrossContainer>
                      {meta.error && meta.touched &&
-                        <div className={`${styles.crossWrapper}`}>
+                        <div>
                            <CrossIcon stroke={`#fff`} />
                         </div>
                      }
-                  </div>
-               </div>
-               <div className={styles.errorText}>
+                  </CrossContainer>
+               </InputContainer>
+               <ErrorTextStyle>
                   {meta.touched && meta.error}
-               </div>
-            </div>
+               </ErrorTextStyle>
+            </FieldContainer>
          }
       </Field>
 

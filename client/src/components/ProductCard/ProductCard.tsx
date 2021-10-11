@@ -1,6 +1,7 @@
 import { FC } from 'react'
+
 import MyButton from '../MyButton/MyButton'
-import styles from './ProductCard.module.scss'
+import { CategoryStyle, CurrencyStyle, CurrentPriceWrapper, NameStyle, PriceValueStyle, ProductCardContainer, ProductContentStyle } from './ProductCardStyles'
 
 
 type ProductCardP = {
@@ -10,22 +11,22 @@ type ProductCardP = {
    onBuyClick: () => void
 }
 
-const ProductCard: FC<ProductCardP> = ({ name, category, price,onBuyClick }) => {
+const ProductCard: FC<ProductCardP> = ({ name, category, price, onBuyClick }) => {
 
    return (
-      <div className={styles.container}>
-         <div className={styles.category}>{category.toUpperCase()}</div>
-         <div className={styles.name}>{name}</div>
-         <div className={styles.priceAndButton}>
-            <div className={styles.priceWrapper}>
-               <div className={styles.currency}>$</div>
-               <div className={styles.priceValue}>{price}</div>
-            </div>
-            <div className={styles.button}>
+      <ProductCardContainer>
+         <CategoryStyle>{category.toUpperCase()}</CategoryStyle>
+         <NameStyle>{name}</NameStyle>
+         <ProductContentStyle>
+            <CurrentPriceWrapper>
+               <CurrencyStyle>{`$`}</CurrencyStyle>
+               <PriceValueStyle>{price}</PriceValueStyle>
+            </CurrentPriceWrapper>
+            <div>
                <MyButton onClick={onBuyClick} text={`BUY`} />
             </div>
-         </div>
-      </div>
+         </ProductContentStyle>
+      </ProductCardContainer>
    )
 }
 

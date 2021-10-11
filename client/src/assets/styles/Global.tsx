@@ -1,5 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+import { createGlobalStyle } from 'styled-components'
 
+
+// Глобальные стили
+export const Global = createGlobalStyle`
 * {
    margin: 0;
    padding: 0;
@@ -12,3 +15,4 @@ textarea:focus,
 select:focus {
    outline: none;
 }
+`

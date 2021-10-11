@@ -6,99 +6,88 @@ import ModalContent, { SubmitData } from '../../components/ModalContent/ModalCon
 import MyButton from '../../components/MyButton/MyButton'
 import Preloader from '../../components/Preloader/Preloader'
 import ProductCard from '../../components/ProductCard/ProductCard'
+import { orderActions, OrderPayloadT } from '../../logic/reducers/orderReducer'
 import { productsActions } from '../../logic/reducers/productsReducer'
+import { orderSelector } from '../../logic/selectors/orderSelector'
 import { chepaestProductsSelector, productsSelector } from '../../logic/selectors/productsSelector'
-import styles from './MainPage.module.scss'
+import { CheapestButtonStyle, MainPageContainer, ProductsWrapper } from './MainPageStyles'
 
-const mockData = [
-   {
-      "name": "orange Juice",
-      "category": "Drinks",
-      "price": 14.99
-   },
-   {
-      "name": "Apples",
-      "category": "fruits",
-      "price": 4.99
-   },
-   {
-      "name": "Tomatos",
-      "category": "vegetables",
-      "price": 6.39
-   },
-   {
-      "name": "Coffee",
-      "category": "Drinks",
-      "price": 3.15
-   },
-   {
-      "name": "Sweet Paper",
-      "category": "Vegetables",
-      "price": 12.15
-   },
-   {
-      "name": "Grapes",
-      "category": "FRUITS",
-      "price": 20.49
-   },
-   // {
-   //    "name": "Pears",
-   //    "category": "Fruits",
-   //    "price": 1.35
-   // },
-   // {
-   //    "name": "Team",
-   //    "category": "Drinks",
-   //    "price": 0.4
-   // }
-]
 
+
+// Начальное значение в модалке
 const initCurrentProduct = {
    "name": "",
    "category": "",
    "price": 0
 }
 
-export type ProductDataT = typeof mockData[0]
+export type ProductDataT = typeof initCurrentProduct
 
+
+// Основная страница. где запускатся экшен с запросом за продуктами , а так же экше для отправки данных ордерв на сервер
 const MainPage = () => {
-
+   // Стэйт для контроля видимости модалки
    const [isVisible, setIsVisible] = useState(false)
    const dispatch = useDispatch()
-   const { data: productsData, fetching: productsFetching } = useSelector(productsSelector)
+   // Данные с редакса о продуктах
+   const { data: productsData, fetching: productsFetching, error: productsError } = useSelector(productsSelector)
+   // Данные с редакса об ордере (те которые отправлялись)
+   const { data: orderData, fetching: orderFetching, error: orderError } = useSelector(orderSelector)
+   // Самый дешёвые продукт
    const cheapestProduct = useSelector(chepaestProductsSelector)
-
-
+   // Текущий продукт на которые нажали. Нужен для корректного отображения данных в модалке
    const [currentProduct, setCurrentProduct] = useState(initCurrentProduct)
 
+   useEffect(() => {
+      if(productsError) {
+         console.error(productsError)
+      }
+      if(orderError) {
+         console.error(orderError)
+      }
+     
+   }, [productsError, orderError])
+
+   // Обработка кнопки для покупки самого дешёвого продукта
    const onBuyCheapestClick = () => {
       setIsVisible(true)
       setCurrentProduct(cheapestProduct)
    }
 
+   // Вывод данных  которые были отправлены на сервер и обратно получены
+   useEffect(() => {
+      console.log(`Data from server: `, orderData)
+   }, [orderData])
+
+   // Загрузка продуктов при первои заходе на страницу
    useEffect(() => {
       dispatch(productsActions.requestProducts())
    }, [])
 
 
+   // Обработчка нажатия кнопки BUY на карточке с продукто
    const onBuyClick = (product: ProductDataT) => {
       setCurrentProduct(product)
       setIsVisible(true)
    }
 
+   // Обработка скрытия модалки. Меняется состояние isVisible и удаляется текущий продукт
    const onDissmissClick = () => {
       setIsVisible(false)
       setCurrentProduct(initCurrentProduct)
    }
 
+
+   // Обработка сабмита. Отправляется запрос с данным из модалки и закрывается модалка
    const handleSubmit = (d: SubmitData) => {
+      dispatch(orderActions.requestOrder(d as OrderPayloadT))
+      console.log(`Submit data: `, d)
       onDissmissClick()
-      console.log(`dasd`, d)
    }
 
    return (
-      <div className={styles.container}>
-         <div className={styles.cardsWrapper}>
+      <MainPageContainer>
+         <ProductsWrapper >
             {productsFetching
                ? <Preloader />
                : productsData.map(d => (
@@ -106,17 +95,26 @@ const MainPage = () => {
                ))
             }
 
-         </div>
-         <div className={styles.cheapestButton}>
-            <MyButton onClick={onBuyCheapestClick} text={`Buy cheapest`} />
-         </div>
+         </ProductsWrapper>
+         {productsFetching
+            ? null
+            : <CheapestButtonStyle>
+               <MyButton
+                  disabled={orderFetching}
+                  buttonStyle={{ padding: `1em 2em` }}
+                  buttonTextStyle={{ fontSize: `16px`, fontWeight: 400 }}
+                  onClick={onBuyCheapestClick}
+                  text={`Buy cheapest`} />
+            </CheapestButtonStyle>
+         }
          <Modal onDissmissClick={onDissmissClick} isVisible={isVisible}>
             <ModalContent
+               isLoading={orderFetching}
                onCancelClick={onDissmissClick}
                currentProduct={currentProduct}
                handleSubmit={handleSubmit} />
          </Modal>
-      </div>
+      </MainPageContainer>
    )
 }
 

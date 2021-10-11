@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { FormContext, HandleChangeT, HandleClickT } from "../Form/Form";
+import { FormContext, HandleChangeT, HandleFocusT } from "../Form/Form";
 
 
 type ChildrenArgs = {
@@ -7,7 +7,7 @@ type ChildrenArgs = {
       name: string
       value: string
       onChange: HandleChangeT,
-      onClick: HandleClickT
+      onFocus: HandleFocusT
    }
    meta: {
       error: string
@@ -21,15 +21,16 @@ type FieldP = {
 }
 
 const Field: FC<FieldP> = ({ children, name }) => {
-   const { handleChange, inputs, meta, handleClick } = useContext(FormContext);
+   // Получаем контекст с нужными нам данными из Form
+   const { handleChange, inputs, meta, handleFocus } = useContext(FormContext);
 
    const error = meta[name] ? meta[name].error : ``;
    const touched = meta[name] ? meta[name].touched : false
    const value = inputs[name] || ``;
-   // console.log(`error`,error)
-   //console.log(`touched`,touched)
 
-   return children({ input: { name, value, onChange: handleChange, onClick: handleClick }, meta: { error, touched }, });
+   // Вызываем chidlren как функцию так как так проще будет работать с кастомными инпутами
+   return children({ input: { name, value, onChange: handleChange, onFocus: handleFocus }, meta: { error, touched }, });
 };
+
 
 export { Field }

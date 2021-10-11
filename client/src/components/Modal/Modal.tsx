@@ -1,7 +1,7 @@
 import { FC } from "react"
 import ReactDOM from "react-dom"
 
-import styles from './Modal.module.scss'
+import { ModalContainer } from "./ModalStyles"
 
 
 
@@ -12,14 +12,19 @@ type ModalP = {
 
 const Modal: FC<ModalP> = ({ isVisible, onDissmissClick, children }) => {
 
+   // onDissmissClick обрабатывает нажатие мимо контента модалки
 
+   // Если модалка скрыта, то мы её не рендерим
    if (!isVisible) return null
 
+   // Основа для создания модальных окон
+   // Используем createPortal для рендера модалки отдельно от основного DOM-дерева
+   // Для этого был создан отдельно div с id="portal" на уровне с root div
    return (
       ReactDOM.createPortal(
-         <div onClick={onDissmissClick} className={styles.container}>
+         <ModalContainer onClick={onDissmissClick}>
             {children}
-         </div>,
+         </ModalContainer>,
          document.getElementById('portal')!)
    )
 }

@@ -1,17 +1,20 @@
 import { ButtonHTMLAttributes, FC } from 'react'
-import styles from './MyButton.module.scss'
 
+import { ButtonStyle, ButtonStyleT, ButtonTextStyleT } from './MyButtonStyles'
+
+// Для более гибкой настройки стилей, прокидываются пропсы для настройки стилей кнопки и текста внутри неё
 type MyButtonP = {
-   onClick?: () => void
+   buttonStyle?: ButtonStyleT
+   buttonTextStyle?: ButtonTextStyleT
    text?: string
-   buttonClassname?: string
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
-const MyButton: FC<MyButtonP> = ({ onClick, text = ``, buttonClassname = `` }) => {
+const MyButton: FC<MyButtonP> = ({ text = ``, buttonStyle = {}, buttonTextStyle = {}, ...buttonProps }) => {
+
    return (
-      <button onClick={onClick} className={`${styles.container} ${buttonClassname}`}>
-         <div className={styles.text}>{text}</div>
-      </button>
+      <ButtonStyle {...buttonStyle} {...buttonTextStyle} disabledStyle={buttonProps.disabled} {...buttonProps} >
+         <div>{text}</div>
+      </ButtonStyle>
    )
 }
 
